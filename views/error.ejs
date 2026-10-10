@@ -1,0 +1,19 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center my-5">
+  <div class="col-md-8 col-lg-6 text-center">
+    <div class="card bg-darker border-danger border-opacity-25 rounded-4 p-5 shadow-lg">
+      <div class="error-icon mb-3">⚠️</div>
+      <h2 class="fw-bold text-light mb-2">Something Went Wrong</h2>
+      <div class="alert alert-danger my-3 py-2 px-3 small rounded-3" role="alert">
+        <p class="mb-0"><%= typeof message !== 'undefined' ? message : 'An unexpected error occurred.' %></p>
+      </div>
+      <div class="mt-4 d-flex justify-content-center gap-2">
+        <a href="/schemes" class="btn btn-primary-gradient px-4">
+          <i class="fa-solid fa-house me-1"></i> Return to Homepage
+        </a>
+        <button onclick="history.back()" class="btn btn-outline-light px-4">Go Back</button>
+      </div>
+    </div>
+  </div>
+</div>

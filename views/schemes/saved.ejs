@@ -1,0 +1,77 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h2 class="fw-bold text-light mb-1"><i class="fa-solid fa-bookmark text-danger me-2"></i>Saved Schemes & Bookmarks</h2>
+    <p class="text-muted mb-0">Quick access to the welfare initiatives and loans you have bookmarked.</p>
+  </div>
+  <a href="/schemes" class="btn btn-outline-light btn-sm">
+    <i class="fa-solid fa-compass me-1"></i> Explore More
+  </a>
+</div>
+
+<% if (savedSchemes.length === 0) { %>
+  <div class="card border-0 text-center py-5 rounded-4 gov-empty-card">
+    <div class="empty-icon mb-3">📑</div>
+    <h4 class="text-light fw-bold">No Saved Schemes Yet</h4>
+    <p class="text-muted">You haven't bookmarked any schemes yet. Click the bookmark icon on any scheme card to save it here for future tracking.</p>
+    <div class="mt-2">
+      <a href="/schemes" class="btn btn-primary-gradient btn-sm">Browse Schemes</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="row g-4">
+    <% for (let scheme of savedSchemes) { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card scheme-card h-100 rounded-4 border-0 shadow-sm d-flex flex-column">
+          <div class="card-header bg-transparent border-0 pt-3 px-3 d-flex align-items-center justify-content-between">
+            <span class="badge badge-category badge-<%= scheme.category.toLowerCase().replace(/[^a-z]/g, '') %>">
+              <%= scheme.category %>
+            </span>
+            <form action="/schemes/<%= scheme._id %>/bookmark" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-icon-bookmark text-danger" title="Remove from bookmarks">
+                <i class="fa-solid fa-bookmark"></i>
+              </button>
+            </form>
+          </div>
+
+          <div class="card-body px-3 py-2 flex-grow-1">
+            <h5 class="card-title fw-bold text-light mb-2">
+              <a href="/schemes/<%= scheme._id %>" class="text-decoration-none text-light hover-accent"><%= scheme.name %></a>
+            </h5>
+            <p class="card-text text-muted small mb-3 line-clamp-2">
+              <%= scheme.eligibilityCriteria %>
+            </p>
+
+            <div class="scheme-metrics-grid">
+              <div class="metric-item">
+                <small class="metric-label">Benefit</small>
+                <div class="metric-val text-success fw-bold">
+                  <%= scheme.benefitAmount > 0 ? '₹' + scheme.benefitAmount.toLocaleString() : 'Norms' %>
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label">Age Limit</small>
+                <div class="metric-val text-light">
+                  <%= scheme.minAge %> - <%= scheme.maxAge %> yrs
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label">Max Income</small>
+                <div class="metric-val text-light">
+                  <%= scheme.incomeLimit > 0 ? '₹' + scheme.incomeLimit.toLocaleString() : 'No Bar' %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer bg-transparent border-0 pb-3 px-3">
+            <a href="/schemes/<%= scheme._id %>" class="btn btn-scheme-apply w-100">
+              Apply & View Steps <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% } %>

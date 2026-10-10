@@ -1,0 +1,144 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <!-- Profile Header Card -->
+    <div class="card bg-darker border-secondary border-opacity-25 rounded-4 p-4 p-md-5 mb-4 shadow-lg">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="user-avatar-lg">
+            <i class="fa-solid fa-user-shield text-accent fs-2"></i>
+          </div>
+          <div>
+            <h3 class="fw-bold text-light mb-0"><%= currUser.fullName %></h3>
+            <span class="text-muted small"><%= currUser.email %> &bull; <%= currUser.phone %></span>
+            <div class="mt-1">
+              <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
+                <i class="fa-solid fa-circle-check me-1"></i> Dual-OTP Verified Citizen
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-md-end">
+          <div class="card p-3 bg-dark border border-secondary border-opacity-25 rounded-3 text-center">
+            <span class="text-muted small d-block">Eligible Schemes</span>
+            <h3 class="fw-bold text-accent mb-0"><%= recommendedCount %></h3>
+            <a href="/schemes/recommended" class="small text-decoration-none text-info mt-1 d-block">View Matched &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-secondary mb-4">
+
+      <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-sliders text-warning me-2"></i>Welfare Matching Parameters</h5>
+      <p class="text-muted small mb-4">These demographic parameters are used by the AI recommendation engine to filter and match government schemes for you.</p>
+
+      <!-- Profile Form -->
+      <form action="/profile" method="POST" class="needs-validation" novalidate>
+        <div class="row g-3 mb-3">
+          <!-- Age -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Age (Years) *</label>
+            <input type="number" name="profile[age]" class="form-control gov-input" value="<%= profile.age %>" min="0" max="120" required>
+          </div>
+
+          <!-- Gender -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Gender *</label>
+            <select name="profile[gender]" class="form-select gov-select" required>
+              <option value="Any" <%- profile.gender === 'Any' ? 'selected' : '' %>>Any</option>
+              <option value="Male" <%- profile.gender === 'Male' ? 'selected' : '' %>>Male</option>
+              <option value="Female" <%- profile.gender === 'Female' ? 'selected' : '' %>>Female</option>
+              <option value="Other" <%- profile.gender === 'Other' ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+
+          <!-- Annual Income -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Annual Family Income (₹) *</label>
+            <input type="number" name="profile[annualIncome]" class="form-control gov-input" value="<%= profile.annualIncome %>" min="0" required>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Occupation -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Occupation / Profession *</label>
+            <select name="profile[occupation]" class="form-select gov-select" required>
+              <% const occupations = ['Student', 'Farmer', 'Self-Employed / Business', 'Unemployed', 'Salaried Worker', 'Artisan / Craftsman', 'Senior Citizen / Retired', 'Other']; %>
+              <% for (let occ of occupations) { %>
+                <option value="<%= occ %>" <%- profile.occupation === occ ? 'selected' : '' %>><%= occ %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <!-- Qualification -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Highest Qualification *</label>
+            <select name="profile[qualification]" class="form-select gov-select" required>
+              <% const quals = ['Below 10th / Literate', '10th Pass', '12th Pass', 'Diploma / ITI', 'Graduate / Degree', 'Post Graduate', 'No Formal Education']; %>
+              <% for (let q of quals) { %>
+                <option value="<%= q %>" <%- profile.qualification === q ? 'selected' : '' %>><%= q %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Social Caste Category -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Social Category / Reservation *</label>
+            <select name="profile[casteCategory]" class="form-select gov-select" required>
+              <% const cats = ['General', 'OBC', 'SC', 'ST', 'EWS', 'Minority']; %>
+              <% for (let c of cats) { %>
+                <option value="<%= c %>" <%- profile.casteCategory === c ? 'selected' : '' %>><%= c %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <!-- State of Residence -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">State of Domicile</label>
+            <select name="profile[state]" class="form-select gov-select">
+              <option value="">All India (Central Domicile)</option>
+              <% for (let st of allStates) { %>
+                <option value="<%= st._id %>" <%- (profile.state && profile.state._id.toString() === st._id.toString()) ? 'selected' : '' %>><%= st.name %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <!-- Marital Status -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Marital Status</label>
+            <select name="profile[maritalStatus]" class="form-select gov-select">
+              <option value="Single" <%- profile.maritalStatus === 'Single' ? 'selected' : '' %>>Single</option>
+              <option value="Married" <%- profile.maritalStatus === 'Married' ? 'selected' : '' %>>Married</option>
+              <option value="Widowed" <%- profile.maritalStatus === 'Widowed' ? 'selected' : '' %>>Widowed</option>
+              <option value="Divorced" <%- profile.maritalStatus === 'Divorced' ? 'selected' : '' %>>Divorced</option>
+            </select>
+          </div>
+
+          <!-- Disability Status -->
+          <div class="col-md-6 d-flex align-items-center pt-md-4">
+            <div class="form-check form-switch fs-5">
+              <input class="form-check-input" type="checkbox" name="profile[disabilityStatus]" value="true" id="disabilityCheck" <%- profile.disabilityStatus ? 'checked' : '' %>>
+              <label class="form-check-label text-light fs-6" for="disabilityCheck">
+                Person with Disability (Divyangjan / PwD)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/schemes/recommended" class="btn btn-outline-light">Cancel</a>
+          <button type="submit" class="btn btn-primary-gradient px-4">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Save Profile & Re-calculate
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

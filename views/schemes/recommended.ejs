@@ -1,0 +1,127 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Header Banner -->
+<div class="row align-items-center mb-4 g-3">
+  <div class="col-md-8">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill">
+        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> AI Intelligence Match Engine
+      </span>
+    </div>
+    <h2 class="fw-bold text-light mb-1">Recommended Schemes for You</h2>
+    <p class="text-muted mb-0">Personalized welfare schemes matched against your citizen profile credentials.</p>
+  </div>
+  <div class="col-md-4 text-md-end">
+    <a href="/profile" class="btn btn-outline-light btn-sm">
+      <i class="fa-solid fa-user-pen me-1"></i> Update Your Profile
+    </a>
+  </div>
+</div>
+
+<!-- Active Profile Specs Card -->
+<div class="card bg-darker border-secondary border-opacity-25 rounded-4 p-3 p-md-4 mb-4">
+  <h6 class="text-light fw-bold mb-3"><i class="fa-solid fa-id-card-clip text-accent me-2"></i>Active Matching Credentials</h6>
+  <div class="row g-2 text-muted small">
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">Age</span>
+      <strong class="text-light"><%= profile.age %> yrs</strong>
+    </div>
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">Gender</span>
+      <strong class="text-light"><%= profile.gender %></strong>
+    </div>
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">Annual Income</span>
+      <strong class="text-light">₹<%= profile.annualIncome.toLocaleString() %></strong>
+    </div>
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">Occupation</span>
+      <strong class="text-light"><%= profile.occupation %></strong>
+    </div>
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">Social Category</span>
+      <strong class="text-light"><%= profile.casteCategory %></strong>
+    </div>
+    <div class="col-6 col-sm-4 col-md-2">
+      <span class="d-block text-secondary">State</span>
+      <strong class="text-light"><%= profile.state ? profile.state.name : 'Pan-India' %></strong>
+    </div>
+  </div>
+</div>
+
+<!-- Recommendations List -->
+<% if (recommendedSchemes.length === 0) { %>
+  <div class="card border-0 text-center py-5 rounded-4 gov-empty-card">
+    <div class="empty-icon mb-3">🎯</div>
+    <h4 class="text-light fw-bold">No Exact Matches Found</h4>
+    <p class="text-muted">Try adjusting your citizen profile income limit or age parameters to discover broader schemes.</p>
+    <div class="mt-2">
+      <a href="/profile" class="btn btn-primary-gradient btn-sm">Update Profile</a>
+      <a href="/schemes" class="btn btn-outline-light btn-sm ms-2">Browse All Schemes</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="row g-4">
+    <% for (let scheme of recommendedSchemes) { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card scheme-card h-100 rounded-4 border-0 shadow-sm d-flex flex-column position-relative">
+          <!-- Relevance Score Badge -->
+          <div class="position-absolute top-0 end-0 m-3 z-1">
+            <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill fw-bold">
+              <i class="fa-solid fa-chart-line me-1"></i> <%= scheme.matchScore %>% Match
+            </span>
+          </div>
+
+          <div class="card-header bg-transparent border-0 pt-3 px-3">
+            <span class="badge badge-category badge-<%= scheme.category.toLowerCase().replace(/[^a-z]/g, '') %>">
+              <%= scheme.category %>
+            </span>
+          </div>
+
+          <div class="card-body px-3 py-2 flex-grow-1">
+            <h5 class="card-title fw-bold text-light mb-2 pe-5">
+              <a href="/schemes/<%= scheme._id %>" class="text-decoration-none text-light hover-accent"><%= scheme.name %></a>
+            </h5>
+            <p class="card-text text-muted small mb-3 line-clamp-2">
+              <%= scheme.eligibilityCriteria %>
+            </p>
+
+            <div class="scheme-metrics-grid">
+              <div class="metric-item">
+                <small class="metric-label">Max Benefit</small>
+                <div class="metric-val text-success fw-bold">
+                  <%= scheme.benefitAmount > 0 ? '₹' + scheme.benefitAmount.toLocaleString() : 'Norms' %>
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label">Age Limit</small>
+                <div class="metric-val text-light">
+                  <%= scheme.minAge %> - <%= scheme.maxAge %> yrs
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label">Max Income</small>
+                <div class="metric-val text-light">
+                  <%= scheme.incomeLimit > 0 ? '₹' + scheme.incomeLimit.toLocaleString() : 'No Limit' %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer bg-transparent border-0 pb-3 px-3 d-flex gap-2">
+            <a href="/schemes/<%= scheme._id %>" class="btn btn-scheme-apply flex-grow-1">
+              Apply & View Steps <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+            <% if (currUser) { %>
+              <form action="/schemes/<%= scheme._id %>/bookmark" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-icon-bookmark" title="Save Scheme">
+                  <i class="fa-<%= savedSchemeIds.includes(scheme._id.toString()) ? 'solid text-danger' : 'regular text-muted' %> fa-bookmark"></i>
+                </button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% } %>

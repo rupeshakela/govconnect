@@ -1,0 +1,177 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Real-time Autonomous Government Gazette Ingestion Ticker -->
+<div class="live-sync-banner mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3 shadow-sm">
+  <div class="d-flex align-items-center gap-2">
+    <span class="status-indicator-dot"></span>
+    <div>
+      <strong class="text-white">Live Government Gazette Auto-Sync: ACTIVE</strong>
+      <span class="text-light ms-1 d-none d-md-inline">&bull; Connected to PIB & Official Portals. New welfare announcements are automatically ingested and reflected.</span>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-2 small">
+    <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
+      <i class="fa-solid fa-bolt me-1"></i> Autonomous Ingestion (Every 15m)
+    </span>
+    <% if (typeof syncStatus !== 'undefined' && syncStatus.lastSyncTime) { %>
+      <span class="text-muted small d-none d-lg-inline">
+        Last Synced: <%= new Date(syncStatus.lastSyncTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %>
+      </span>
+    <% } %>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="gov-hero-section text-center py-5 mb-4 position-relative overflow-hidden rounded-4">
+  <div class="gov-hero-bg-glow"></div>
+  <div class="position-relative z-1">
+    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3 fw-bold">
+      <i class="fa-solid fa-certificate me-1"></i> Official Digital India Initiative
+    </span>
+    <h1 class="display-5 fw-extrabold text-light mb-3" data-i18n="heroTitle">
+      Discover Government Schemes You Are Eligible For
+    </h1>
+    <p class="lead text-muted max-w-700 mx-auto mb-4" data-i18n="heroSubtitle">
+      Explore Central & State welfare initiatives, solar subsidies, pensions, and financial aid matching your profile.
+    </p>
+
+    <!-- Quick Stats -->
+    <div class="d-flex justify-content-center gap-4 flex-wrap text-center mt-4">
+      <div class="stat-pill">
+        <span class="stat-number text-accent"><%= allSchemes.length %></span>
+        <span class="stat-label">Active Schemes</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-number text-success">₹78,000+</span>
+        <span class="stat-label">Max Direct Subsidy</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-number text-info">100%</span>
+        <span class="stat-label">Direct Bank Transfer (DBT)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filter Section: Categories + States + Search -->
+<div class="gov-filters-card card border-0 shadow-sm p-3 mb-4 rounded-4">
+  <!-- Category Filter Pills -->
+  <div class="category-pills-scroll d-flex gap-2 pb-2 mb-3">
+    <% const categories = [
+      { name: 'All', icon: 'fa-grip' },
+      { name: 'Farmers', icon: 'fa-tractor' },
+      { name: 'Women', icon: 'fa-person-dress' },
+      { name: 'Students', icon: 'fa-graduation-cap' },
+      { name: 'Senior Citizens', icon: 'fa-person-cane' },
+      { name: 'Businesses', icon: 'fa-shop' },
+      { name: 'Healthcare', icon: 'fa-heart-pulse' },
+      { name: 'General', icon: 'fa-users' }
+    ]; %>
+
+    <% for (let cat of categories) { %>
+      <a href="/schemes?category=<%= cat.name %>&state=<%= currentState %>&search=<%= searchQuery %>" 
+         class="btn btn-category-pill <%- currentCategory === cat.name ? 'active' : '' %>">
+        <i class="fa-solid <%= cat.icon %> me-1"></i> <%= cat.name %>
+      </a>
+    <% } %>
+  </div>
+
+  <!-- State & Search Bar Controls -->
+  <form action="/schemes" method="GET" class="row g-2 align-items-center">
+    <input type="hidden" name="category" value="<%= currentCategory %>">
+    <div class="col-md-4 col-lg-3">
+      <select name="state" class="form-select gov-select" onchange="this.form.submit()">
+        <option value="All" <%- currentState === 'All' ? 'selected' : '' %>>All India (Central & States)</option>
+        <% for (let st of allStates) { %>
+          <option value="<%= st._id %>" <%- currentState === st._id.toString() ? 'selected' : '' %>><%= st.name %></option>
+        <% } %>
+      </select>
+    </div>
+    <div class="col-md-6 col-lg-7">
+      <input type="text" name="search" class="form-control gov-input" placeholder="Search by scheme name or keywords..." value="<%= searchQuery %>">
+    </div>
+    <div class="col-md-2 col-lg-2 d-grid">
+      <button type="submit" class="btn btn-primary-gradient">Apply Filter</button>
+    </div>
+  </form>
+</div>
+
+<!-- Schemes Grid -->
+<% if (allSchemes.length === 0) { %>
+  <div class="card border-0 text-center py-5 rounded-4 gov-empty-card">
+    <div class="empty-icon mb-3">🏛️</div>
+    <h4 class="text-light fw-bold">No Government Schemes Found</h4>
+    <p class="text-muted">No schemes match your active filter criteria. Try resetting your search or category.</p>
+    <div class="mt-2">
+      <a href="/schemes" class="btn btn-outline-light btn-sm">Reset All Filters</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="row g-4">
+    <% for (let scheme of allSchemes) { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card scheme-card h-100 rounded-4 border-0 shadow-sm d-flex flex-column">
+          <!-- Card Top Bar: Category & Bookmark Button -->
+          <div class="card-header bg-transparent border-0 pt-3 px-3 d-flex align-items-center justify-content-between">
+            <span class="badge badge-category badge-<%= scheme.category.toLowerCase().replace(/[^a-z]/g, '') %>">
+              <%= scheme.category %>
+            </span>
+            <div class="d-flex align-items-center gap-1">
+              <% if (scheme.state) { %>
+                <span class="badge bg-secondary text-white small"><i class="fa-solid fa-location-dot me-1"></i><%= scheme.state.name %></span>
+              <% } else { %>
+                <span class="badge bg-primary text-white small"><i class="fa-solid fa-flag me-1"></i>Central</span>
+              <% } %>
+              <% if (currUser) { %>
+                <form action="/schemes/<%= scheme._id %>/bookmark" method="POST" class="d-inline bookmark-form">
+                  <button type="submit" class="btn btn-icon-bookmark" title="Save Scheme">
+                    <i class="fa-<%= savedSchemeIds.includes(scheme._id.toString()) ? 'solid text-danger' : 'regular text-muted' %> fa-bookmark"></i>
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Card Body: Scheme Name & Details -->
+          <div class="card-body px-3 py-2 flex-grow-1">
+            <h5 class="card-title fw-bold text-light mb-2">
+              <a href="/schemes/<%= scheme._id %>" class="text-decoration-none text-light hover-accent"><%= scheme.name %></a>
+            </h5>
+            <p class="card-text text-muted mb-3 line-clamp-2">
+              <%= scheme.eligibilityCriteria %>
+            </p>
+
+            <!-- Metrics Chips -->
+            <div class="scheme-metrics-grid">
+              <div class="metric-item">
+                <small class="metric-label" data-i18n="cardMaxBenefit">Benefit</small>
+                <div class="metric-val text-success fw-bold">
+                  <%= scheme.benefitAmount > 0 ? '₹' + scheme.benefitAmount.toLocaleString() : 'As per norms' %>
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label" data-i18n="cardAgeLimit">Age Limit</small>
+                <div class="metric-val text-light">
+                  <%= scheme.minAge %> - <%= scheme.maxAge %> yrs
+                </div>
+              </div>
+              <div class="metric-item">
+                <small class="metric-label" data-i18n="cardIncomeLimit">Income Cap</small>
+                <div class="metric-val text-light">
+                  <%= scheme.incomeLimit > 0 ? '₹' + scheme.incomeLimit.toLocaleString() : 'No Limit' %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer: Action Button -->
+          <div class="card-footer bg-transparent border-0 pb-3 px-3">
+            <a href="/schemes/<%= scheme._id %>" class="btn btn-scheme-apply w-100 d-flex align-items-center justify-content-center gap-2">
+              <span data-i18n="cardApplyOnline">Apply & View Steps</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% } %>

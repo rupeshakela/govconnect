@@ -1,0 +1,118 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center my-4">
+  <div class="col-md-8 col-lg-6 col-xl-5">
+    <div class="card auth-card border-0 rounded-4 shadow-2xl p-4 p-md-5">
+      <!-- Title -->
+      <div class="text-center mb-4">
+        <div class="auth-icon mb-2">🔐</div>
+        <h3 class="fw-bold text-light mb-1">Dual-OTP Verification</h3>
+        <p class="text-muted small">Verify your Email & Mobile number to activate your citizen account</p>
+      </div>
+
+      <!-- Dev Mode Assistant Banner (If devOtp present) -->
+      <% if (devOtp && (devOtp.emailOtp || devOtp.phoneOtp)) { %>
+        <div class="card bg-warning-subtle border-warning border-opacity-50 p-3 mb-4 rounded-3 text-warning-emphasis small">
+          <div class="d-flex align-items-center gap-2 mb-1 fw-bold">
+            <i class="fa-solid fa-code text-warning"></i> Developer Mode Quick OTPs:
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span>Email OTP: <strong class="font-monospace fs-6"><%= devOtp.emailOtp %></strong></span>
+            <span>Mobile OTP: <strong class="font-monospace fs-6"><%= devOtp.phoneOtp %></strong></span>
+          </div>
+          <button type="button" class="btn btn-warning btn-sm w-100 mt-2 py-1" onclick="autoFillDevOtps('<%= devOtp.emailOtp %>', '<%= devOtp.phoneOtp %>')">
+            <i class="fa-solid fa-bolt me-1"></i> Auto-Fill Test OTPs
+          </button>
+        </div>
+      <% } %>
+
+      <!-- Verification Form -->
+      <form action="/verify-otp" method="POST" class="needs-validation" novalidate>
+        <input type="hidden" name="userId" value="<%= user._id %>">
+
+        <!-- 1. Email OTP -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label text-light fw-semibold small mb-0">
+              <i class="fa-regular fa-envelope me-1 text-primary"></i> Email OTP
+            </label>
+            <span class="badge bg-dark border border-secondary text-secondary small"><%= maskedEmail %></span>
+          </div>
+          <input type="text" id="emailOtpInput" name="emailOtp" class="form-control gov-input text-center fs-4 letter-spacing-lg" placeholder="••••••" maxlength="6" pattern="[0-9]{6}" required autofocus>
+          <div class="invalid-feedback">Enter the 6-digit code sent to your email.</div>
+          <small class="text-muted">Code expires in 5 minutes.</small>
+        </div>
+
+        <!-- 2. Phone OTP -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label text-light fw-semibold small mb-0">
+              <i class="fa-solid fa-mobile-screen me-1 text-success"></i> Mobile SMS OTP
+            </label>
+            <span class="badge bg-dark border border-secondary text-secondary small">+91 <%= maskedPhone %></span>
+          </div>
+          <input type="text" id="phoneOtpInput" name="phoneOtp" class="form-control gov-input text-center fs-4 letter-spacing-lg" placeholder="••••••" maxlength="6" pattern="[0-9]{6}" required>
+          <div class="invalid-feedback">Enter the 6-digit code sent to your mobile.</div>
+          <small class="text-muted">Code expires in 5 minutes.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-semibold mb-3">
+          <i class="fa-solid fa-circle-check me-1"></i> Verify & Activate Account
+        </button>
+      </form>
+
+      <!-- 60-Second Cooldown & Resend Controls -->
+      <div class="p-3 bg-darker rounded-3 border border-secondary border-opacity-25 text-center">
+        <p class="text-muted small mb-2">Didn't receive code?</p>
+        <div id="cooldownTimerWrap" class="small text-muted mb-2">
+          Resend available in <span id="cooldownSeconds" class="text-warning fw-bold">60</span>s
+        </div>
+        <div class="d-flex justify-content-center gap-2">
+          <form action="/resend-otp" method="POST" class="d-inline">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+            <input type="hidden" name="type" value="email">
+            <button type="submit" class="btn btn-outline-light btn-sm resend-btn" id="resendEmailBtn" disabled>
+              <i class="fa-regular fa-envelope me-1"></i> Resend Email OTP
+            </button>
+          </form>
+          <form action="/resend-otp" method="POST" class="d-inline">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+            <input type="hidden" name="type" value="phone">
+            <button type="submit" class="btn btn-outline-light btn-sm resend-btn" id="resendPhoneBtn" disabled>
+              <i class="fa-solid fa-mobile-screen me-1"></i> Resend Mobile OTP
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 60-Second Cooldown Timer
+  (function() {
+    let timeLeft = 60;
+    const timerElem = document.getElementById('cooldownSeconds');
+    const timerWrap = document.getElementById('cooldownTimerWrap');
+    const resendEmail = document.getElementById('resendEmailBtn');
+    const resendPhone = document.getElementById('resendPhoneBtn');
+
+    const interval = setInterval(() => {
+      timeLeft--;
+      if (timerElem) timerElem.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        if (timerWrap) timerWrap.innerHTML = '<span class="text-success"><i class="fa-solid fa-check"></i> You can now request a new code.</span>';
+        if (resendEmail) resendEmail.disabled = false;
+        if (resendPhone) resendPhone.disabled = false;
+      }
+    }, 1000);
+  })();
+
+  function autoFillDevOtps(emailOtp, phoneOtp) {
+    const e = document.getElementById('emailOtpInput');
+    const p = document.getElementById('phoneOtpInput');
+    if (e && emailOtp) e.value = emailOtp;
+    if (p && phoneOtp) p.value = phoneOtp;
+  }
+</script>

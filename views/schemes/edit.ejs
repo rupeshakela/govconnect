@@ -1,0 +1,94 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card bg-darker border-secondary border-opacity-25 rounded-4 p-4 p-md-5 shadow-lg">
+      <h3 class="fw-bold text-light mb-1">Edit Government Scheme</h3>
+      <p class="text-muted small mb-4">Update policy guidelines, eligibility rules or application URL.</p>
+
+      <form action="/schemes/<%= scheme._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Scheme Name *</label>
+          <input type="text" name="scheme[name]" class="form-control gov-input" value="<%= scheme.name %>" required>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Category *</label>
+            <select name="scheme[category]" class="form-select gov-select" required>
+              <% const cats = ['Farmers', 'Women', 'Students', 'Senior Citizens', 'Startups', 'Businesses', 'Healthcare', 'General']; %>
+              <% for (let c of cats) { %>
+                <option value="<%= c %>" <%- scheme.category === c ? 'selected' : '' %>><%= c %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">State / Jurisdiction</label>
+            <select name="scheme[state]" class="form-select gov-select">
+              <option value="">Central Government (All India)</option>
+              <% for (let st of allStates) { %>
+                <option value="<%= st._id %>" <%- (scheme.state && scheme.state.toString() === st._id.toString()) ? 'selected' : '' %>><%= st.name %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Eligibility Criteria *</label>
+          <textarea name="scheme[eligibilityCriteria]" class="form-control gov-input" rows="3" required><%= scheme.eligibilityCriteria %></textarea>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Max Benefit (₹)</label>
+            <input type="number" name="scheme[benefitAmount]" class="form-control gov-input" value="<%= scheme.benefitAmount %>" min="0">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Income Limit (₹)</label>
+            <input type="number" name="scheme[incomeLimit]" class="form-control gov-input" value="<%= scheme.incomeLimit %>" min="0">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Gender</label>
+            <select name="scheme[genderRequirement]" class="form-select gov-select">
+              <option value="Any" <%- scheme.genderRequirement === 'Any' ? 'selected' : '' %>>Any</option>
+              <option value="Male" <%- scheme.genderRequirement === 'Male' ? 'selected' : '' %>>Male</option>
+              <option value="Female" <%- scheme.genderRequirement === 'Female' ? 'selected' : '' %>>Female</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Minimum Age</label>
+            <input type="number" name="scheme[minAge]" class="form-control gov-input" value="<%= scheme.minAge %>" min="0" max="100">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Maximum Age</label>
+            <input type="number" name="scheme[maxAge]" class="form-control gov-input" value="<%= scheme.maxAge %>" min="0" max="100">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Required Documents List *</label>
+          <textarea name="scheme[documentsRequired]" class="form-control gov-input" rows="2" required><%= scheme.documentsRequired %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Application Process *</label>
+          <textarea name="scheme[applicationProcess]" class="form-control gov-input" rows="3" required><%= scheme.applicationProcess %></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label text-light fw-semibold">Official Website URL *</label>
+          <input type="url" name="scheme[officialWebsite]" class="form-control gov-input" value="<%= scheme.officialWebsite %>" required>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/schemes/<%= scheme._id %>" class="btn btn-outline-light">Cancel</a>
+          <button type="submit" class="btn btn-primary-gradient px-4">Update Scheme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

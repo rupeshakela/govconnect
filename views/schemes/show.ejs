@@ -1,0 +1,173 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <!-- Back Link -->
+    <div class="mb-3">
+      <a href="/schemes" class="text-decoration-none text-muted small hover-accent">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to all schemes
+      </a>
+    </div>
+
+    <!-- Main Scheme Container Card -->
+    <div class="card scheme-detail-card border-0 rounded-4 shadow-lg overflow-hidden mb-4">
+      <!-- Banner Header -->
+      <div class="scheme-detail-header p-4 p-md-5">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge badge-category badge-<%= scheme.category.toLowerCase().replace(/[^a-z]/g, '') %> px-3 py-2 fs-6">
+              <%= scheme.category %>
+            </span>
+            <% if (scheme.state) { %>
+              <span class="badge bg-secondary px-3 py-2"><i class="fa-solid fa-location-dot me-1"></i><%= scheme.state.name %> State Initiative</span>
+            <% } else { %>
+              <span class="badge bg-primary px-3 py-2"><i class="fa-solid fa-flag me-1"></i>Central Government Initiative</span>
+            <% } %>
+          </div>
+
+          <!-- Bookmark Action -->
+          <% if (currUser) { %>
+            <form action="/schemes/<%= scheme._id %>/bookmark" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-outline-light btn-sm d-flex align-items-center gap-2">
+                <i class="fa-<%= isBookmarked ? 'solid text-danger' : 'regular' %> fa-bookmark"></i>
+                <span><%= isBookmarked ? 'Saved in Bookmarks' : 'Save Scheme' %></span>
+              </button>
+            </form>
+          <% } %>
+        </div>
+
+        <h1 class="display-6 fw-bold text-light mb-3"><%= scheme.name %></h1>
+
+        <!-- High-Level Benefits Pill -->
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <div class="badge-benefit-callout p-3 rounded-3 d-flex align-items-center gap-3">
+            <div class="benefit-icon-wrap">💰</div>
+            <div>
+              <small class="text-muted text-uppercase fw-semibold d-block">Direct Financial / Welfare Benefit</small>
+              <span class="fs-4 fw-bold text-success">
+                <%= scheme.benefitAmount > 0 ? '₹' + scheme.benefitAmount.toLocaleString() : 'As per scheme guidelines' %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eligibility & Criteria Matrix -->
+      <div class="p-4 p-md-5 bg-darker border-top border-bottom border-dark">
+        <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-sliders text-accent me-2"></i>Eligibility Norms at a Glance</h5>
+        <div class="row g-3">
+          <div class="col-sm-6 col-md-3">
+            <div class="criteria-card p-3 rounded-3">
+              <small class="text-muted d-block">Eligible Age Range</small>
+              <strong class="text-light fs-5"><%= scheme.minAge %> - <%= scheme.maxAge %> Years</strong>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <div class="criteria-card p-3 rounded-3">
+              <small class="text-muted d-block">Annual Income Limit</small>
+              <strong class="text-light fs-5"><%= scheme.incomeLimit > 0 ? 'Up to ₹' + scheme.incomeLimit.toLocaleString() : 'No Bar' %></strong>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <div class="criteria-card p-3 rounded-3">
+              <small class="text-muted d-block">Gender Criteria</small>
+              <strong class="text-light fs-5"><%= scheme.genderRequirement %></strong>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <div class="criteria-card p-3 rounded-3">
+              <small class="text-muted d-block">Jurisdiction</small>
+              <strong class="text-light fs-5"><%= scheme.state ? scheme.state.name : 'Pan-India' %></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Body: Tabs or Structured Sections -->
+      <div class="p-4 p-md-5">
+        <!-- Section 1: Detailed Eligibility -->
+        <div class="mb-5">
+          <h4 class="fw-bold text-light mb-3 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-clipboard-check text-primary"></i> Detailed Eligibility Criteria
+          </h4>
+          <div class="section-content-box p-4 rounded-3 text-light-subtle lead-sm">
+            <%= scheme.eligibilityCriteria %>
+          </div>
+        </div>
+
+        <!-- Section 2: Required Documents -->
+        <div class="mb-5">
+          <h4 class="fw-bold text-light mb-3 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-file-invoice text-warning"></i> Required Documents List
+          </h4>
+          <div class="section-content-box p-4 rounded-3 text-light-subtle">
+            <% const docs = scheme.documentsRequired.split(/[,;\n]/).map(d => d.trim()).filter(Boolean); %>
+            <div class="row g-2">
+              <% for (let doc of docs) { %>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2 p-2 rounded bg-dark border border-secondary border-opacity-25">
+                    <i class="fa-solid fa-circle-check text-success"></i>
+                    <span><%= doc %></span>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Step-by-Step Application Guide -->
+        <div class="mb-5">
+          <h4 class="fw-bold text-light mb-3 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-diagram-project text-info"></i> Step-by-Step Application Process
+          </h4>
+          <div class="section-content-box p-4 rounded-3 text-light-subtle">
+            <div class="application-steps-list">
+              <% const steps = scheme.applicationProcess.split(/(?:\d+\.|\-\>|\n)/).map(s => s.trim()).filter(Boolean); %>
+              <% if (steps.length > 0) { %>
+                <% steps.forEach((step, idx) => { %>
+                  <div class="d-flex gap-3 mb-3">
+                    <div class="step-badge"><%= idx + 1 %></div>
+                    <div class="pt-1">
+                      <p class="mb-0 text-light"><%= step %></p>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p class="text-light mb-0"><%= scheme.applicationProcess %></p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Official Apply Link Call-to-Action -->
+        <div class="card bg-gradient-cta p-4 p-md-5 rounded-4 border-0 text-center text-md-start d-flex flex-md-row align-items-center justify-content-between gap-4">
+          <div>
+            <h3 class="fw-bold text-light mb-2">Ready to Apply for this Scheme?</h3>
+            <p class="text-muted mb-0">Visit the official Government of India nodal portal to submit your application securely.</p>
+          </div>
+          <div>
+            <a href="<%= scheme.officialWebsite %>" target="_blank" rel="noopener noreferrer" class="btn btn-apply-external btn-lg px-4 py-3 shadow">
+              <span>Open Official Govt Portal</span> <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Admin / Moderator Controls -->
+        <% if (currUser && (currUser.isAdminUser || currUser.isModerator)) { %>
+          <hr class="border-secondary my-5">
+          <div class="d-flex align-items-center gap-3 justify-content-end">
+            <span class="text-muted small">Admin Controls:</span>
+            <a href="/schemes/<%= scheme._id %>/edit" class="btn btn-outline-warning btn-sm">
+              <i class="fa-solid fa-pen-to-square me-1"></i> Edit Scheme
+            </a>
+            <form action="/schemes/<%= scheme._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to archive this scheme?');">
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="fa-solid fa-trash me-1"></i> Delete Scheme
+              </button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

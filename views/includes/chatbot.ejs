@@ -1,0 +1,91 @@
+<!-- Floating AI Mitra Chatbot Widget -->
+<div id="govChatbotWidget" class="gov-chatbot-widget">
+  <!-- Trigger Button -->
+  <button id="chatbotToggleBtn" class="chatbot-trigger-btn shadow-lg" aria-label="Open AI Government Mitra">
+    <div class="trigger-icon-wrap">
+      <span class="chat-bot-icon">🤖</span>
+      <span class="chat-pulse"></span>
+    </div>
+    <span class="trigger-label d-none d-sm-inline">AI Sarkari Mitra</span>
+  </button>
+
+  <!-- Chat Window Panel -->
+  <div id="chatbotPanel" class="chatbot-panel shadow-2xl d-none">
+    <!-- Header -->
+    <div class="chatbot-header d-flex align-items-center justify-content-between p-3 border-bottom border-dark">
+      <div class="d-flex align-items-center gap-2">
+        <div class="bot-avatar">🏛️</div>
+        <div>
+          <h6 class="mb-0 fw-bold text-light" data-i18n="chatTitle">AI Government Mitra</h6>
+          <small class="text-success d-flex align-items-center gap-1">
+            <span class="status-indicator-dot"></span> Powered by Gemini 3.6
+          </small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <button id="chatbotClearBtn" class="btn btn-sm btn-icon text-muted" title="Clear conversation">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+        <button id="chatbotCloseBtn" class="btn btn-sm btn-icon text-muted" title="Minimize chat">
+          <i class="fa-solid fa-xmark fs-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="chatbotMessages" class="chatbot-messages p-3">
+      <!-- Welcome Message -->
+      <div class="chat-bubble-wrap bot-bubble-wrap">
+        <div class="chat-avatar bot-avatar-sm">🏛️</div>
+        <div class="chat-bubble bot-bubble">
+          <div class="chat-content">
+            Namaste! 🙏 Hello! Main aapka <strong>GovScheme AI Assistant (सरकारी मित्र)</strong> hu.<br><br>
+            Aap mujhse kisi bhi sarkari yojana, PM-KUSUM solar pump, PM-KISAN, scholarships, Mudra business loans, sarkari jobs, ya online form bharne ke tareeqe ke baare me pooch sakte hain.
+          </div>
+          <div class="chat-actions mt-2">
+            <button class="btn btn-speak btn-xs" title="Listen / Suniye" onclick="speakText(this)">
+              <i class="fa-solid fa-volume-high"></i> Listen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ChatGPT-Style Floating Stop Voice Bar (Active while speaking) -->
+    <div id="chatSpeakingWaveBar" class="chatbot-speaking-bar d-none px-3 py-2 border-top border-dark d-flex align-items-center justify-content-between" style="background: rgba(239, 68, 68, 0.15);">
+      <div class="d-flex align-items-center gap-2">
+        <span class="spinner-grow spinner-grow-sm text-danger" role="status" style="width: 10px; height: 10px;"></span>
+        <small class="text-light fw-bold"><i class="fa-solid fa-waveform-lines text-danger me-1"></i> AI Speaking / बोल रहा है...</small>
+      </div>
+      <button type="button" class="btn btn-danger btn-xs py-1 px-2 fw-bold" onclick="stopSpeaking()" title="Voice band karein (Stop Voice)">
+        <i class="fa-solid fa-square me-1"></i> Stop Voice ⏹️
+      </button>
+    </div>
+
+    <!-- Contextual Suggestion Pills -->
+    <div id="chatbotSuggestions" class="chatbot-suggestions px-3 py-2 border-top border-dark d-flex gap-2 flex-wrap">
+      <button class="btn btn-pill-suggestion btn-xs" onclick="sendSuggestion('PM-KUSUM Solar Pump ☀️')">PM-KUSUM Solar ☀️</button>
+      <button class="btn btn-pill-suggestion btn-xs" onclick="sendSuggestion('PM Surya Ghar Muft Bijli ⚡')">PM Surya Ghar ⚡</button>
+      <button class="btn btn-pill-suggestion btn-xs" onclick="sendSuggestion('Latest Govt Jobs 2026 🏢')">Govt Jobs 🏢</button>
+      <button class="btn btn-pill-suggestion btn-xs" onclick="sendSuggestion('Form Kaise Bharein? 📋')">Form Guide 📋</button>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="chatbot-footer p-3 border-top border-dark">
+      <form id="chatbotForm" class="d-flex align-items-center gap-2" onsubmit="handleChatSubmit(event)">
+        <!-- Speech Recognition / Voice Input Button -->
+        <button type="button" id="chatMicBtn" class="btn btn-mic" title="Speak to AI (Microphone)">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <!-- Message Input -->
+        <input type="text" id="chatInput" class="form-control chat-input" placeholder="Poochhein ya type karein..." autocomplete="off" required>
+
+        <!-- Send Button -->
+        <button type="submit" id="chatSendBtn" class="btn btn-send" title="Send Message">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

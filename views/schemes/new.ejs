@@ -1,0 +1,114 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card bg-darker border-secondary border-opacity-25 rounded-4 p-4 p-md-5 shadow-lg">
+      <h3 class="fw-bold text-light mb-1">Add New Government Scheme</h3>
+      <p class="text-muted small mb-4">Fill out the official notification details to publish a new scheme on the portal.</p>
+
+      <form action="/schemes" method="POST" class="needs-validation" novalidate>
+        <!-- Scheme Name -->
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Scheme Name *</label>
+          <input type="text" name="scheme[name]" class="form-control gov-input" required placeholder="e.g. Pradhan Mantri Awas Yojana">
+          <div class="invalid-feedback">Scheme name is required</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Category -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Category *</label>
+            <select name="scheme[category]" class="form-select gov-select" required>
+              <option value="Farmers">Farmers</option>
+              <option value="Women">Women</option>
+              <option value="Students">Students</option>
+              <option value="Senior Citizens">Senior Citizens</option>
+              <option value="Startups">Startups</option>
+              <option value="Businesses">Businesses</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="General" selected>General</option>
+            </select>
+          </div>
+
+          <!-- State -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">State / Jurisdiction</label>
+            <select name="scheme[state]" class="form-select gov-select">
+              <option value="">Central Government (All India)</option>
+              <% for (let st of allStates) { %>
+                <option value="<%= st._id %>"><%= st.name %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Eligibility Criteria -->
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Eligibility Criteria *</label>
+          <textarea name="scheme[eligibilityCriteria]" class="form-control gov-input" rows="3" required placeholder="Who is eligible to receive benefits?"></textarea>
+          <div class="invalid-feedback">Eligibility criteria is required</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Benefit Amount -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Max Benefit (₹)</label>
+            <input type="number" name="scheme[benefitAmount]" class="form-control gov-input" value="0" min="0">
+          </div>
+          <!-- Income Limit -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Income Limit (₹)</label>
+            <input type="number" name="scheme[incomeLimit]" class="form-control gov-input" value="300000" min="0">
+          </div>
+          <!-- Gender -->
+          <div class="col-md-4">
+            <label class="form-label text-light fw-semibold">Gender</label>
+            <select name="scheme[genderRequirement]" class="form-select gov-select">
+              <option value="Any" selected>Any</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Age Range -->
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Minimum Age</label>
+            <input type="number" name="scheme[minAge]" class="form-control gov-input" value="18" min="0" max="100">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-light fw-semibold">Maximum Age</label>
+            <input type="number" name="scheme[maxAge]" class="form-control gov-input" value="70" min="0" max="100">
+          </div>
+        </div>
+
+        <!-- Documents Required -->
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Required Documents List *</label>
+          <textarea name="scheme[documentsRequired]" class="form-control gov-input" rows="2" required placeholder="Aadhaar Card, Income Certificate, Bank Passbook, Land Records"></textarea>
+          <div class="invalid-feedback">Documents list is required</div>
+        </div>
+
+        <!-- Application Process -->
+        <div class="mb-3">
+          <label class="form-label text-light fw-semibold">Application Process (Step-by-step) *</label>
+          <textarea name="scheme[applicationProcess]" class="form-control gov-input" rows="3" required placeholder="1. Step 1 -> 2. Step 2 -> 3. Step 3"></textarea>
+          <div class="invalid-feedback">Application process is required</div>
+        </div>
+
+        <!-- Official Website -->
+        <div class="mb-4">
+          <label class="form-label text-light fw-semibold">Official Website URL *</label>
+          <input type="url" name="scheme[officialWebsite]" class="form-control gov-input" required placeholder="https://scheme.gov.in/">
+          <div class="invalid-feedback">Valid URL is required</div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/schemes" class="btn btn-outline-light">Cancel</a>
+          <button type="submit" class="btn btn-primary-gradient px-4">Publish Scheme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

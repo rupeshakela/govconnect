@@ -1,0 +1,117 @@
+<nav class="navbar navbar-expand-lg navbar-dark gov-navbar sticky-top">
+  <div class="container-fluid px-lg-4">
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/schemes">
+      <div class="brand-icon">🏛️</div>
+      <div>
+        <span class="brand-title">GovScheme<span class="text-accent">.in</span></span>
+        <small class="brand-subtitle d-block text-muted">Government of India Portal</small>
+      </div>
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <!-- Main Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link <%- (typeof activePage !== 'undefined' && activePage === 'schemes') ? 'active' : '' %>" href="/schemes">
+            <i class="fa-solid fa-list-check me-1"></i> <span data-i18n="navAllSchemes">All Schemes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%- (typeof activePage !== 'undefined' && activePage === 'recommended') ? 'active' : '' %>" href="/schemes/recommended">
+            <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i> <span data-i18n="navRecommended">AI Matched</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%- (typeof activePage !== 'undefined' && activePage === 'jobs') ? 'active' : '' %>" href="/jobs">
+            <i class="fa-solid fa-briefcase text-info me-1"></i> <span data-i18n="navJobsExams">Gov Jobs & Exams</span>
+          </a>
+        </li>
+        <% if (currUser) { %>
+          <li class="nav-item">
+            <a class="nav-link <%- (typeof activePage !== 'undefined' && activePage === 'saved') ? 'active' : '' %>" href="/schemes/saved">
+              <i class="fa-solid fa-bookmark text-danger me-1"></i> <span data-i18n="navSaved">Saved</span>
+            </a>
+          </li>
+        <% } %>
+      </ul>
+
+      <!-- Search Bar -->
+      <form class="d-flex mx-lg-3 my-2 my-lg-0 search-form" role="search" action="/schemes" method="GET">
+        <div class="input-group search-input-group">
+          <span class="input-group-text bg-transparent border-0 text-muted">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input class="form-control border-0 bg-transparent text-light" type="search" name="search" placeholder="Search schemes, jobs..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" data-i18n-placeholder="navSearchPlaceholder">
+          <button class="btn btn-search" type="submit">Search</button>
+        </div>
+      </form>
+
+      <!-- Right Hand Actions: Sync Button, Language Switcher, Auth -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Live Sync Trigger -->
+        <form action="/portal/sync-gov-data" method="POST" class="d-inline" id="syncForm">
+          <button type="submit" class="btn btn-sync btn-sm d-flex align-items-center gap-1" id="syncBtn" title="Ingest live Gazette & PIB updates">
+            <i class="fa-solid fa-rotate text-success" id="syncIcon"></i>
+            <span class="d-none d-xl-inline" data-i18n="navLiveSync">Live Sync</span>
+          </button>
+        </form>
+
+        <!-- Multilingual Language Selector (8 Languages) -->
+        <div class="dropdown">
+          <button class="btn btn-lang btn-sm dropdown-toggle d-flex align-items-center gap-1" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="currentLangFlag">🇬🇧</span>
+            <span id="currentLangName" class="d-none d-md-inline">English</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end lang-dropdown-menu" aria-labelledby="langDropdown">
+            <li><button class="dropdown-item lang-opt" data-lang="en">🇬🇧 English</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="hi">🇮🇳 हिन्दी (Hindi)</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="hinglish">🇮🇳 Hinglish</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="bn">🇮🇳 বাংলা (Bengali)</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="mr">🇮🇳 मराठी (Marathi)</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="te">🇮🇳 తెలుగు (Telugu)</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="ta">🇮🇳 தமிழ் (Tamil)</button></li>
+            <li><button class="dropdown-item lang-opt" data-lang="gu">🇮🇳 ગુજરાતી (Gujarati)</button></li>
+          </ul>
+        </div>
+
+        <!-- Auth / Profile Buttons -->
+        <% if (!currUser) { %>
+          <a href="/login" class="btn btn-outline-light btn-sm px-3">Log in</a>
+          <a href="/signup" class="btn btn-primary-gradient btn-sm px-3">Sign Up</a>
+        <% } else { %>
+          <div class="dropdown">
+            <button class="btn btn-user btn-sm dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+              <div class="user-avatar-sm">
+                <i class="fa-solid fa-user-check text-success"></i>
+              </div>
+              <span class="d-none d-sm-inline fw-semibold"><%= currUser.fullName || currUser.username %></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+              <li class="dropdown-header">
+                <div class="fw-bold text-light"><%= currUser.fullName %></div>
+                <small class="text-success"><i class="fa-solid fa-circle-check"></i> <span data-i18n="navVerifiedCitizen">Verified Citizen</span></small>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/profile"><i class="fa-solid fa-id-card me-2"></i><span data-i18n="navProfile">Citizen Profile</span></a></li>
+              <li><a class="dropdown-item" href="/schemes/recommended"><i class="fa-solid fa-wand-magic-sparkles me-2 text-warning"></i><span data-i18n="navRecommended">AI Recommendations</span></a></li>
+              <li><a class="dropdown-item" href="/schemes/saved"><i class="fa-solid fa-bookmark me-2 text-danger"></i><span data-i18n="navSaved">Saved Schemes</span></a></li>
+              <% if (currUser.isAdminUser || currUser.isModerator) { %>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-warning" href="/schemes/new"><i class="fa-solid fa-plus-circle me-2"></i>Add New Scheme</a></li>
+              <% } %>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i><span data-i18n="navLogout">Logout</span></a></li>
+            </ul>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
