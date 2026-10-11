@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import API from '../services/api';
@@ -11,14 +12,17 @@ import UnifiedItemModal from '../components/UnifiedItemModal';
 import SkeletonCard from '../components/SkeletonCard';
 import { 
   ArrowLeft, 
+  ArrowRight,
   Briefcase, 
   FileText, 
+  FileDown,
   Rocket, 
   GraduationCap, 
   Trophy, 
   Sparkles, 
   SlidersHorizontal,
   MapPin,
+  ScanLine,
   Search,
   ExternalLink,
   Users,
@@ -49,6 +53,7 @@ const SCHEME_BENEFICIARIES = [
 const DashboardPage = () => {
   const { user, logout } = useContext(AuthContext);
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const [schemes, setSchemes] = useState([]);
   const [exams, setExams] = useState([]);
@@ -165,18 +170,30 @@ const DashboardPage = () => {
       return schemes.filter((s) => getSchemeBeneficiary(s).key === selectedBeneficiary);
     }
     if (selectedCategory === 'Startups') {
-      return schemes.filter((s) => s.category === 'Startups' || s.category === 'Businesses');
+      return schemes.filter((s) => s.category === 'Startups' || s.category === 'Businesses' || /startup|seed|venture|incubat|msme|mudra|entrepreneur/i.test((s.name || '') + ' ' + (s.category || '')));
     }
     if (selectedCategory === 'Exams') {
       return exams;
     }
     if (selectedCategory === 'Results') {
-      // Results & Admit Cards from exams and jobs
-      return exams.map((e) => ({
+      // Direct Results & Official Scorecards from both National Exams and Recruitment Notices
+      const examResults = exams.map((e) => ({
         ...e,
         isResultItem: true,
-        resultStatus: 'Scorecard & Result Link Active'
+        name: `${e.name} - Scorecard & Merit List`,
+        resultStatus: 'Official Result & Cutoff Scorecard Active',
+        resultLink: e.resultLink || e.officialWebsite || 'https://www.india.gov.in/'
       }));
+
+      const jobResults = jobs.map((j) => ({
+        ...j,
+        isResultItem: true,
+        name: `${j.postName} - Final Merit List & Result`,
+        resultStatus: 'Merit Selection List Declared',
+        resultLink: j.officialNotification || 'https://www.india.gov.in/'
+      }));
+
+      return [...examResults, ...jobResults];
     }
 
     return [];
@@ -446,6 +463,175 @@ const DashboardPage = () => {
                   setSelectedLetter('ALL');
                 }}
               />
+
+              {/* Citizen Utility Suite: 3 High-Impact Direct Tools */}
+              <div style={{ marginTop: '38px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <Sparkles size={16} color="var(--accent-primary)" />
+                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                        {t('citizenSuiteBadge', 'Citizen Smart Suite • 3 Essential Tools')}
+                      </span>
+                    </div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#fff', margin: 0 }}>
+                      {t('citizenSuiteTitle', 'Quick Citizen Services & Verification')}
+                    </h2>
+                  </div>
+                  <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                    {t('citizenSuiteTag', 'Official PDF Dossier • Kendra Locator • OCR Verification')}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '18px' }}>
+                  {/* Tool 1: 1-Click Yojana Parchi */}
+                  <div
+                    onClick={() => navigate('/yojana-parchi')}
+                    style={{
+                      borderRadius: '18px',
+                      padding: '22px',
+                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                      border: '1.5px solid rgba(99, 102, 241, 0.35)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: '190px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 8px 24px -6px rgba(0,0,0,0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#6366f1';
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                      e.currentTarget.style.boxShadow = '0 12px 30px -6px rgba(99,102,241,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.35)';
+                      e.currentTarget.style.transform = 'none';
+                      e.currentTarget.style.boxShadow = '0 8px 24px -6px rgba(0,0,0,0.4)';
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div style={{ width: '46px', height: '46px', borderRadius: '13px', background: 'rgba(99, 102, 241, 0.25)', border: '1px solid rgba(99, 102, 241, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <FileDown size={22} color="#818cf8" />
+                        </div>
+                        <span style={{ fontSize: '10.5px', fontWeight: '800', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+                          1-CLICK PDF
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#fff', margin: '0 0 6px 0' }}>
+                        {t('navYojanaParchi', '1-Click Yojana Parchi')}
+                      </h3>
+                      <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                        Download official citizen benefit report with eligible schemes, readiness score, and document checklist.
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#818cf8' }}>Generate Official Dossier</span>
+                      <ArrowRight size={15} color="#818cf8" />
+                    </div>
+                  </div>
+
+                  {/* Tool 2: CSC / Jan Seva Kendra Locator */}
+                  <div
+                    onClick={() => navigate('/csc-locator')}
+                    style={{
+                      borderRadius: '18px',
+                      padding: '22px',
+                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.08) 100%)',
+                      border: '1.5px solid rgba(16, 185, 129, 0.35)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: '190px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 8px 24px -6px rgba(0,0,0,0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#10b981';
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                      e.currentTarget.style.boxShadow = '0 12px 30px -6px rgba(16,185,129,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.35)';
+                      e.currentTarget.style.transform = 'none';
+                      e.currentTarget.style.boxShadow = '0 8px 24px -6px rgba(0,0,0,0.4)';
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div style={{ width: '46px', height: '46px', borderRadius: '13px', background: 'rgba(16, 185, 129, 0.25)', border: '1px solid rgba(16, 185, 129, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <MapPin size={22} color="#34d399" />
+                        </div>
+                        <span style={{ fontSize: '10.5px', fontWeight: '800', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                          OFFICIAL RATES
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#fff', margin: '0 0 6px 0' }}>
+                        {t('navCSCLocator', 'CSC / Jan Seva Kendra')}
+                      </h3>
+                      <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                        Search verified CSC centres by pincode or district with UIDAI & government mandated service rate cards.
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#34d399' }}>Find Centres & Rate Card</span>
+                      <ArrowRight size={15} color="#34d399" />
+                    </div>
+                  </div>
+
+                  {/* Tool 3: Document OCR & Name Mismatch Checker */}
+                  <div
+                    onClick={() => navigate('/doc-checker')}
+                    style={{
+                      borderRadius: '18px',
+                      padding: '22px',
+                      background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.16) 0%, rgba(234, 88, 12, 0.08) 100%)',
+                      border: '1.5px solid rgba(249, 115, 22, 0.35)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: '190px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 8px 24px -6px rgba(0,0,0,0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#f97316';
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                      e.currentTarget.style.boxShadow = '0 12px 30px -6px rgba(249,115,22,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(249, 115, 22, 0.35)';
+                      e.currentTarget.style.transform = 'none';
+                      e.currentTarget.style.boxShadow = '0 8px 24px -6px rgba(0,0,0,0.4)';
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div style={{ width: '46px', height: '46px', borderRadius: '13px', background: 'rgba(249, 115, 22, 0.25)', border: '1px solid rgba(249, 115, 22, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <ScanLine size={22} color="#fb923c" />
+                        </div>
+                        <span style={{ fontSize: '10.5px', fontWeight: '800', background: 'rgba(249, 115, 22, 0.2)', color: '#fb923c', padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(249, 115, 22, 0.3)' }}>
+                          AI OCR + FUZZY
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#fff', margin: '0 0 6px 0' }}>
+                        {t('navDocChecker', 'Doc Mismatch Checker')}
+                      </h3>
+                      <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                        Prevent rejection before applying. Cross-verify names across Aadhaar, PAN, and marksheets with instant risk score.
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#fb923c' }}>Check Document Risk</span>
+                      <ArrowRight size={15} color="#fb923c" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             /* 4. CATEGORY VIEW: ALPHABETICAL ORDER (A TO Z) WITH A-Z JUMP BAR */

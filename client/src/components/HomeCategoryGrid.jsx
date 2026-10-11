@@ -57,7 +57,7 @@ const CATEGORIES = [
     borderColor: 'rgba(245, 158, 11, 0.35)',
     glow: 'rgba(245, 158, 11, 0.4)',
     badgeKey: 'catStartupsBadge',
-    defaultBadge: 'Seed Funds',
+    defaultBadge: '17+ Seed Funds & Grants',
     popularKey: 'catStartupsExamples',
     defaultPopular: 'Startup India Seed Fund, Stand-Up India, CGTMSE'
   },
@@ -90,7 +90,7 @@ const CATEGORIES = [
     borderColor: 'rgba(6, 182, 212, 0.35)',
     glow: 'rgba(6, 182, 212, 0.4)',
     badgeKey: 'catResultsBadge',
-    defaultBadge: 'Live Results & Admit Cards',
+    defaultBadge: '43+ Live Results & Scorecards',
     popularKey: 'catResultsExamples',
     defaultPopular: 'NTA Scorecards, UPSC Results, Admit Cards'
   }

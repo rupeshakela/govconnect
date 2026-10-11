@@ -5,14 +5,16 @@
  */
 
 function getActualItemFees(item, isExam, isJob, isStartup, isScheme) {
-  // 1. Schemes & Startups: 100% Free Government Applications
-  if (isScheme || isStartup) {
+  // 1. Schemes, Startups & Results: 100% Free Government Applications / Result Access
+  if (isScheme || isStartup || item.isResultItem) {
     return {
       generalOBC: '₹0 (100% Free / No Fee)',
       scStPwd: '₹0 (Free)',
       female: '₹0 (Free)',
-      summary: '₹0 (Free Application)',
-      paymentModes: 'No Application Fee (100% Free Official Government Benefit)'
+      summary: '₹0 (Free Access)',
+      paymentModes: item.isResultItem
+        ? 'Zero Fee - Official Government Result & Scorecard Access is 100% Free'
+        : 'No Application Fee (100% Free Official Government Benefit)'
     };
   }
 
@@ -531,17 +533,23 @@ export function normalizePortalItem(item) {
   if (!item) return null;
 
   // Determine item type
-  const isExam = Boolean(item.conductingAuthority || item.examPattern || item.syllabus);
-  const isJob = Boolean(item.postName && item.salaryRange);
-  const isStartup = (item.category === 'Startups' || item.category === 'Businesses') && !isExam && !isJob;
-  const isScheme = !isExam && !isJob && !isStartup;
+  const isResult = Boolean(item.isResultItem);
+  const isExam = !isResult && Boolean(item.conductingAuthority || item.examPattern || item.syllabus);
+  const isJob = !isResult && Boolean(item.postName && item.salaryRange);
+  const isStartup = !isResult && (item.category === 'Startups' || item.category === 'Businesses' || /startup|seed|venture|incubat|msme|mudra|entrepreneur/i.test((item.name || '') + ' ' + (item.category || ''))) && !isExam && !isJob;
+  const isScheme = !isResult && !isExam && !isJob && !isStartup;
 
   let type = 'scheme';
   let typeLabel = 'Government Welfare Scheme';
   let typeBadge = '📜 Scheme';
   let badgeColor = '#10b981';
 
-  if (isExam) {
+  if (isResult) {
+    type = 'result';
+    typeLabel = 'Official Examination Scorecard / Result / Merit List';
+    typeBadge = '🏆 Result & Scorecard';
+    badgeColor = '#06b6d4';
+  } else if (isExam) {
     type = 'exam';
     typeLabel = 'National Competitive Entrance & Recruitment Exam';
     typeBadge = '🎓 Competitive Exam';
@@ -570,7 +578,12 @@ export function normalizePortalItem(item) {
   let endDate = 'Closing Soon (Refer Official Notification)';
   let examSchedule = item.importantDates || 'Announced on Official Portal';
 
-  if (isExam) {
+  if (isResult) {
+    publishDate = 'Official Gazette / Result Notice 2026';
+    startDate = 'Session 2026-2027';
+    endDate = 'Declared & Live';
+    examSchedule = item.importantDates || item.resultStatus || 'CBT / Written Examination Completed';
+  } else if (isExam) {
     publishDate = 'Official Gazette 2026';
     startDate = 'Open for Online Registration';
     endDate = 'Session Dependent (Refer Portal)';
@@ -599,9 +612,17 @@ export function normalizePortalItem(item) {
     ageLimit = `${item.minAge} to ${item.maxAge} Years`;
   }
 
-  // Required Documents
+  // Required Documents / Credentials
   let documents = [];
-  if (isExam) {
+  if (isResult) {
+    documents = [
+      'Roll Number / Registration Number (printed on Admit Card)',
+      'Date of Birth (DOB in DD/MM/YYYY format as per Matriculation certificate)',
+      'Security Captcha code displayed on the result page',
+      'Original Photo Identity Card (Aadhaar / PAN / Voter ID) for Document Verification',
+      'Printed copy of Admit Card / Application Confirmation Slip'
+    ];
+  } else if (isExam) {
     documents = [
       'Class 10th Passing Certificate / Marksheet (Mandatory Date of Birth Proof)',
       'Class 12th / Qualifying Degree Certificate or Appearing Roll Number',
@@ -646,9 +667,17 @@ export function normalizePortalItem(item) {
     }
   }
 
-  // Step-by-Step How to Apply
+  // Step-by-Step How to Apply / How to Check Result
   let applicationSteps = [];
-  if (isExam) {
+  if (isResult) {
+    applicationSteps = [
+      { step: '01', title: 'Open Result Server', desc: `Click the "Open Official Result Server" button below to access ${authority}'s verified result portal.` },
+      { step: '02', title: 'Enter Roll Number & DOB', desc: 'Input your Roll Number / Registration Number and Date of Birth as recorded during application.' },
+      { step: '03', title: 'Submit & View Scorecard', desc: 'Click "Submit" to view your individual scorecard, sectional marks, and overall qualifying status.' },
+      { step: '04', title: 'Verify Category Cutoff', desc: 'Compare your score with official cutoff marks declared for UR, OBC, SC, ST, and EWS categories.' },
+      { step: '05', title: 'Download & Preserve PDF', desc: 'Download official Scorecard PDF and merit rank sheet. Keep 3 printed copies for document verification.' }
+    ];
+  } else if (isExam) {
     applicationSteps = [
       { step: '01', title: 'Portal Registration', desc: `Visit official portal (${item.officialWebsite || 'official exam website'}) and register with active Email ID & Mobile Number to generate your unique Application Number.` },
       { step: '02', title: 'Fill Application Details', desc: 'Log in to portal and enter personal details, academic scores, and select your top 4 exam center city preferences.' },
@@ -697,7 +726,7 @@ export function normalizePortalItem(item) {
   // Official URLs
   const officialWebsite = item.officialWebsite || item.officialNotification || 'https://www.india.gov.in/';
   const admitCardLink = item.admitCardLink || null;
-  const resultLink = item.resultLink || null;
+  const resultLink = item.resultLink || (isResult ? (item.officialNotification || item.officialWebsite || 'https://www.india.gov.in/') : null);
   const notificationLink = item.officialNotification || null;
 
   return {

@@ -43,6 +43,7 @@ const ProfilePage = () => {
     qualification: 'Graduate / Degree',
     casteCategory: 'General',
     state: '',
+    district: '',
     maritalStatus: 'Single',
     disabilityStatus: false
   });
@@ -70,6 +71,7 @@ const ProfilePage = () => {
           qualification: p.qualification ?? 'Graduate / Degree',
           casteCategory: p.casteCategory ?? 'General',
           state: p.state?._id || p.state || '',
+          district: p.district || '',
           maritalStatus: p.maritalStatus ?? 'Single',
           disabilityStatus: p.disabilityStatus ?? false
         });
@@ -278,6 +280,19 @@ const ProfilePage = () => {
                     <option key={st._id} value={st._id}>{st.name}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* District */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>District / City</label>
+                <input
+                  type="text"
+                  name="district"
+                  placeholder="e.g. Pune, Patna, Lucknow, Bengaluru"
+                  value={profile.district || ''}
+                  onChange={handleInputChange}
+                  style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', borderRadius: '8px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                />
               </div>
 
               {/* Disability Status */}

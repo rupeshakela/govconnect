@@ -163,21 +163,33 @@ const PortalUnifiedCard = ({
             </div>
           )}
 
+          {/* Result Specific Highlights */}
+          {data.type === 'result' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Award size={14} color="#06b6d4" style={{ flexShrink: 0 }} />
+              <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <strong style={{ color: '#cbd5e1' }}>Result Status:</strong> <span style={{ color: '#22d3ee', fontWeight: '700' }}>{item.resultStatus || 'Scorecard & Merit Link Active'}</span>
+              </span>
+            </div>
+          )}
+
           {/* Important Dates */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar size={14} color="var(--warning)" style={{ flexShrink: 0 }} />
             <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              <strong style={{ color: '#cbd5e1' }}>{t('deadlineLabel', 'Deadline')}:</strong> {data.endDate}
+              <strong style={{ color: '#cbd5e1' }}>{data.type === 'result' ? 'Declaration Date' : t('deadlineLabel', 'Deadline')}:</strong> {data.endDate}
             </span>
           </div>
 
           {/* Fee / Benefit */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <DollarSign size={14} color="var(--success)" style={{ flexShrink: 0 }} />
-            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              <strong style={{ color: '#cbd5e1' }}>{t('feeLabel', 'Fee')}:</strong> {data.fees.summary || data.fees.generalOBC}
-            </span>
-          </div>
+          {data.type !== 'result' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <DollarSign size={14} color="var(--success)" style={{ flexShrink: 0 }} />
+              <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <strong style={{ color: '#cbd5e1' }}>{t('feeLabel', 'Fee')}:</strong> {data.fees.summary || data.fees.generalOBC}
+              </span>
+            </div>
+          )}
 
           {/* Qualification / Eligibility */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -210,15 +222,18 @@ const PortalUnifiedCard = ({
             gap: '6px',
             flex: 1,
             justifyContent: 'center',
-            textDecoration: 'none'
+            textDecoration: 'none',
+            background: data.type === 'result' ? 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)' : undefined,
+            border: data.type === 'result' ? '1px solid #06b6d4' : undefined,
+            boxShadow: data.type === 'result' ? '0 4px 14px rgba(6, 182, 212, 0.35)' : undefined
           }}
         >
-          <span>{t('viewDetailsBtn', 'View Details & Apply')}</span>
+          <span>{data.type === 'result' ? '🏆 View Scorecard & Result' : t('viewDetailsBtn', 'View Details & Apply')}</span>
           <ArrowRight size={14} />
         </button>
 
         <a
-          href={data.officialWebsite}
+          href={data.type === 'result' && (data.resultLink || item.resultLink) ? (data.resultLink || item.resultLink) : data.officialWebsite}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -226,14 +241,14 @@ const PortalUnifiedCard = ({
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '8px',
             padding: '8px',
-            color: 'var(--text-secondary)',
+            color: data.type === 'result' ? '#22d3ee' : 'var(--text-secondary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
             transition: 'all 0.15s'
           }}
-          title="Direct Official Portal Link"
+          title={data.type === 'result' ? 'Direct Official Result / Scorecard Portal' : 'Direct Official Portal Link'}
         >
           <ExternalLink size={15} />
         </a>

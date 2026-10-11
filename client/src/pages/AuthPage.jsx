@@ -59,10 +59,42 @@ const AuthPage = () => {
 
     try {
       const res = await API.post('/auth/login', { identifier: identifier.trim(), password: loginPassword });
-      login(res.data.data);
+      const userData = res.data?.data || (res.data?.accessToken ? { ...res.data.user, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken } : null);
+      login(userData);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Invalid credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 1-Click Instant Demo Access (Guaranteed Fail-Proof)
+  const handleQuickDemoLogin = async () => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+    try {
+      let res;
+      try {
+        res = await API.post('/auth/login', { identifier: 'citizen@gov.in', password: 'Password@123' });
+      } catch (err) {
+        // If not already registered, auto-register
+        res = await API.post('/auth/register/initiate', {
+          fullName: 'Aarav Sharma',
+          email: 'citizen@gov.in',
+          phone: '9876543210',
+          password: 'Password@123'
+        });
+      }
+      const userData = res.data?.data || (res.data?.accessToken ? { ...res.data.user, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken } : null);
+      if (userData) {
+        login(userData);
+        navigate('/dashboard');
+        return;
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Demo login failed');
     } finally {
       setLoading(false);
     }
@@ -98,8 +130,9 @@ const AuthPage = () => {
       });
 
       // User registered & activated directly -> land directly on dashboard
-      if (res.data?.data) {
-        login(res.data.data);
+      const userData = res.data?.data || (res.data?.accessToken ? { ...res.data.user, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken } : null);
+      if (userData) {
+        login(userData);
         navigate('/dashboard');
         return;
       }
@@ -288,6 +321,36 @@ const AuthPage = () => {
               <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', padding: '14px', marginTop: '10px', fontSize: '14px' }}>
                 {loading ? 'Authenticating...' : 'Sign In To Portal'}
               </button>
+
+              {/* 1-Click Demo Citizen Login */}
+              <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <button
+                  type="button"
+                  onClick={handleQuickDemoLogin}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '11px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(168, 85, 247, 0.15) 100%)',
+                    border: '1px solid rgba(99, 102, 241, 0.4)',
+                    color: '#c7d2fe',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#818cf8'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.4)'; e.currentTarget.style.color = '#c7d2fe'; }}
+                >
+                  <Sparkles size={15} color="#818cf8" />
+                  <span>1-Click Demo Citizen Login (Aarav Sharma)</span>
+                </button>
+              </div>
             </form>
           )}
 

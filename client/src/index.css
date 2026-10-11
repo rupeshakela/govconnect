@@ -342,4 +342,24 @@ body {
   }
 }
 
+/* ── Utility Animations ─────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.75; transform: scale(1.08); }
+}
+
+/* Highlight "NEW" sidebar badges */
+.new-badge {
+  animation: pulse-badge 2s ease-in-out infinite;
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #10b981 !important;
+}

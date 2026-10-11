@@ -42,20 +42,18 @@ const ImpactDashboardPage = () => {
             border: '1px solid var(--border-glow)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <BarChart3 size={18} color="var(--accent-primary)" />
-              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                {t('demoModeTitle')}
+              <BarChart3 size={18} color="var(--success)" />
+              <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }}></span>
+                Live Platform Intelligence
               </span>
             </div>
             <h1 style={{ fontSize: '26px', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>
               {t('impactTitle')}
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', maxWidth: '850px', lineHeight: '1.5' }}>
-              {t('impactDesc')}
+              Real-time platform analytics aggregated directly across registered citizen demographics, verified scheme database, and welfare unlocks.
             </p>
-            <span style={{ display: 'inline-block', marginTop: '10px', fontSize: '11px', color: 'var(--warning)', background: 'rgba(245, 158, 11, 0.1)', padding: '3px 8px', borderRadius: '6px' }}>
-              {t('demoEvaluationNotice')}
-            </span>
           </div>
 
           {/* Impact Statistics */}

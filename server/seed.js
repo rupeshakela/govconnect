@@ -31,7 +31,12 @@ const seedDatabase = async () => {
       Exam.deleteMany({}),
       Job.deleteMany({}),
       UserProfile.deleteMany({}),
-      User.deleteMany({ email: { $in: demoUsersData.map(d => d.user.email) } })
+      User.deleteMany({
+        $or: [
+          { email: { $in: demoUsersData.map(d => d.user.email) } },
+          { phone: { $in: demoUsersData.map(d => d.user.phone) } }
+        ]
+      })
     ]);
     console.log('🧹 Cleaned existing records.');
 

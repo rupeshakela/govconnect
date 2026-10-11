@@ -13,7 +13,11 @@ const {
   handleToggleTask,
   handleSimulate,
   handleUpdateDocumentChecklist,
-  handleGetImpactStats
+  handleGetImpactStats,
+  handleYojanaParchi,
+  handleCSCLocator,
+  handleGetDocumentTypes,
+  handleAuditSingleDocument
 } = require('../controllers/benefitController');
 const { protect } = require('../middlewares/authMiddleware');
 
@@ -22,18 +26,9 @@ router.post('/analyze-situation', handleAnalyzeSituation);
 router.get('/pathways', handleGetPathways);
 router.post('/verify-message', handleVerifyMessage);
 router.post('/simulate', handleSimulate);
-router.get('/impact-stats', (req, res) => res.json({
-  success: true,
-  isDemoData: true,
-  label: 'Simulated / Demonstration Statistics for Presentation',
-  data: {
-    citizensAnalyzed: 14820,
-    potentialBenefitsIdentified: 48930,
-    documentGapsResolved: 21450,
-    estimatedAidUnlocked: '₹18.4 Crore',
-    avgReadinessGain: '+38%'
-  }
-}));
+router.get('/impact-stats', handleGetImpactStats);
+router.get('/document-types', handleGetDocumentTypes);
+router.post('/audit-single-document', handleAuditSingleDocument);
 
 // Authenticated Citizen Intelligence Endpoints
 router.get('/gap-analysis', protect, handleGapAnalysis);
@@ -44,5 +39,11 @@ router.get('/action-plan', protect, handleGetActionPlan);
 router.post('/action-plan/task', protect, handleAddTask);
 router.put('/action-plan/task/:id', protect, handleToggleTask);
 router.put('/document-checklist', protect, handleUpdateDocumentChecklist);
+
+// Yojana Parchi PDF Data (Private - needs profile)
+router.get('/yojana-parchi', protect, handleYojanaParchi);
+
+// CSC / Jan Seva Kendra Locator (Public)
+router.get('/csc-locator', handleCSCLocator);
 
 module.exports = router;

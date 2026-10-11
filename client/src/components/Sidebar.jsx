@@ -8,14 +8,13 @@ import {
   User, 
   LogOut, 
   ShieldCheck, 
-  AlertTriangle, 
-  Users, 
-  Compass, 
-  CheckSquare, 
   Sliders, 
   ShieldAlert, 
   BarChart3,
-  X
+  X,
+  FileDown,
+  MapPin,
+  ScanLine
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -27,17 +26,17 @@ const Sidebar = ({ user, onLogout }) => {
 
   const navItems = [
     { to: '/dashboard', label: t('navCockpit'), icon: LayoutDashboard },
-    { to: '/gap', label: t('navGap'), icon: AlertTriangle, badge: t('badgeGap') },
-    { to: '/family', label: t('navFamily'), icon: Users, badge: t('badgeFamily') },
-    { to: '/pathways', label: t('navPathways'), icon: Compass, badge: t('badgeChains') },
-    { to: '/action-plan', label: t('navActionPlan'), icon: CheckSquare, badge: t('badgeRoadmap') },
     { to: '/simulator', label: t('navSimulator'), icon: Sliders, badge: t('badgeWhatIf') },
     { to: '/verify', label: t('navVerify'), icon: ShieldAlert, badge: t('badgeSafety') },
     { to: '/recommended', label: t('navRecommended'), icon: Sparkles, badge: t('badgeAI') },
     { to: '/jobs-exams', label: t('navJobsExams'), icon: Briefcase },
     { to: '/saved', label: t('navSaved'), icon: Bookmark },
     { to: '/impact', label: t('navImpact'), icon: BarChart3, badge: t('badgeDemo') },
-    { to: '/profile', label: t('navProfile'), icon: User }
+    { to: '/profile', label: t('navProfile'), icon: User },
+    // ── New Features ──
+    { to: '/yojana-parchi', label: t('navYojanaParchi', '📄 1-Click Yojana Parchi'), icon: FileDown, badge: 'NEW' },
+    { to: '/csc-locator', label: t('navCSCLocator', '🏛️ CSC / Jan Seva Kendra'), icon: MapPin, badge: 'NEW' },
+    { to: '/doc-checker', label: t('navDocChecker', '📋 Doc Verification & Audit'), icon: ScanLine, badge: 'NEW' },
   ];
 
   return (
@@ -164,7 +163,7 @@ const Sidebar = ({ user, onLogout }) => {
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
-                      <span style={{ fontSize: '9.5px', fontWeight: '800', padding: '2px 6px', borderRadius: '6px', background: 'rgba(99, 102, 241, 0.25)', color: '#fff' }}>
+                      <span className={item.badge === 'NEW' ? 'new-badge' : ''} style={{ fontSize: '9.5px', fontWeight: '800', padding: '2px 6px', borderRadius: '6px', background: item.badge === 'NEW' ? 'rgba(16,185,129,0.25)' : 'rgba(99, 102, 241, 0.25)', color: item.badge === 'NEW' ? '#10b981' : '#fff' }}>
                         {item.badge}
                       </span>
                     )}

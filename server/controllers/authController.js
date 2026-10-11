@@ -83,19 +83,24 @@ const initiateRegister = async (req, res) => {
 
     await user.save();
 
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      isCitizen: user.isCitizen,
+      isAdminUser: user.isAdminUser,
+      accessToken,
+      refreshToken
+    };
+
     return res.status(200).json({
       success: true,
       message: 'Account registered successfully! Welcome to BenefitOS.',
       accessToken,
       refreshToken,
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone,
-        isCitizen: user.isCitizen,
-        isAdminUser: user.isAdminUser
-      }
+      user: userData,
+      data: userData
     });
   } catch (err) {
     console.error('Registration error:', err);

@@ -49,6 +49,7 @@ const updateProfile = async (req, res) => {
     qualification,
     casteCategory,
     state,
+    district,
     maritalStatus,
     disabilityStatus
   } = req.body;
@@ -67,6 +68,7 @@ const updateProfile = async (req, res) => {
     if (qualification !== undefined) profile.qualification = qualification;
     if (casteCategory !== undefined) profile.casteCategory = casteCategory;
     if (state !== undefined) profile.state = state || null;
+    if (district !== undefined) profile.district = String(district).trim();
     if (maritalStatus !== undefined) profile.maritalStatus = maritalStatus;
     if (disabilityStatus !== undefined) profile.disabilityStatus = Boolean(disabilityStatus);
 

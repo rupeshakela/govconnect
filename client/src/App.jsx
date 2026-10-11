@@ -13,13 +13,13 @@ import SavedSchemesPage from './pages/SavedSchemesPage';
 import ProfilePage from './pages/ProfilePage';
 
 // BenefitOS Intelligence Pages
-import BenefitGapPage from './pages/BenefitGapPage';
-import FamilyBenefitPage from './pages/FamilyBenefitPage';
-import BenefitPathwayPage from './pages/BenefitPathwayPage';
-import ActionPlanPage from './pages/ActionPlanPage';
 import BenefitSimulatorPage from './pages/BenefitSimulatorPage';
 import VerifyBenefitPage from './pages/VerifyBenefitPage';
 import ImpactDashboardPage from './pages/ImpactDashboardPage';
+// New Features
+import YojanaParchiPage from './pages/YojanaParchiPage';
+import CSCLocatorPage from './pages/CSCLocatorPage';
+import DocumentCheckerPage from './pages/DocumentCheckerPage';
 
 function App() {
   return (
@@ -34,38 +34,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/gap" 
-              element={
-                <ProtectedRoute>
-                  <BenefitGapPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/family" 
-              element={
-                <ProtectedRoute>
-                  <FamilyBenefitPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/pathways" 
-              element={
-                <ProtectedRoute>
-                  <BenefitPathwayPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/action-plan" 
-              element={
-                <ProtectedRoute>
-                  <ActionPlanPage />
                 </ProtectedRoute>
               } 
             />
@@ -124,6 +92,31 @@ function App() {
                   <ProfilePage />
                 </ProtectedRoute>
               } 
+            />
+            {/* New Features */}
+            <Route
+              path="/yojana-parchi"
+              element={
+                <ProtectedRoute>
+                  <YojanaParchiPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/csc-locator"
+              element={
+                <ProtectedRoute>
+                  <CSCLocatorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doc-checker"
+              element={
+                <ProtectedRoute>
+                  <DocumentCheckerPage />
+                </ProtectedRoute>
+              }
             />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
